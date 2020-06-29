@@ -1,0 +1,16 @@
+PODS:
+  - BAPKV (0.1.0)
+
+DEPENDENCIES:
+  - BAPKV (from `../`)
+
+EXTERNAL SOURCES:
+  BAPKV:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  BAPKV: 16c269fb65d48d1044cb6ffb9a0bc1ba1ef1be15
+
+PODFILE CHECKSUM: 8dbe1a58fe954bab30d514e3ae472f6bc0cfa832
+
+COCOAPODS: 1.9.1
