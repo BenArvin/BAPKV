@@ -5,11 +5,7 @@
 [![License](https://img.shields.io/cocoapods/l/BAPKV.svg?style=flat)](https://cocoapods.org/pods/BAPKV)
 [![Platform](https://img.shields.io/cocoapods/p/BAPKV.svg?style=flat)](https://cocoapods.org/pods/BAPKV)
 
-## Example
-
-To run the example project, clone the repo, and run `pod install` from the Example directory first.
-
-## Requirements
+A persistent key-value store for iOS, and it's also fast.
 
 ## Installation
 
