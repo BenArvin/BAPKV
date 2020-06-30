@@ -2,7 +2,7 @@
 //  BAPKVStreamFileEditor.m
 //  BAPKV
 //
-//  Created by arvinnie on 2020/6/29.
+//  Created by benarvin on 2020/6/29.
 //
 
 #import "BAPKVStreamFileEditor.h"
@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
     BAPKVStreamFileEditorErrorCodeAppendActionInvalidStatus = 1031,
     BAPKVStreamFileEditorErrorCodeAppendActionNoSpace = 1032,
     BAPKVStreamFileEditorErrorCodeAppendActionWriteFailed = 1033,
+    BAPKVStreamFileEditorErrorCodeAppendActionUnknown = 1034,
     
     BAPKVStreamFileEditorErrorCodeTranscribeActionInvalidStatus = 1011,
     BAPKVStreamFileEditorErrorCodeTranscribeActionReadFailed = 1012,
@@ -142,16 +143,36 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
         [self.originWriteStream open];
         status = [self.originWriteStream streamStatus];
     }
-    return [self append:self.originWriteStream content:content error:error];
+    NSError *tmpError;
+    NSInteger writedCount;
+    BOOL tmpSuccessed = [self append:self.originWriteStream content:content error:&tmpError count:&writedCount];
+    if (!tmpSuccessed) {
+        // undo if need
+        if (writedCount > 0) {
+            [self closeStream:self.originWriteStream];
+            NSInteger fullSize = [[self class] getSize:self.originPath];
+            if (fullSize > 0 && (fullSize - writedCount > 0)) {
+                [self delete:fullSize - writedCount length:writedCount error:nil];
+            }
+        }
+        if (error) {
+            *error = tmpError?:[self simpleError:BAPKVStreamFileEditorErrorCodeAppendActionUnknown description:@"Append failed, unknown reason"];
+        }
+        return NO;
+    }
+    return YES;
 }
 
 - (BOOL)delete:(NSUInteger)location length:(NSUInteger)length error:(NSError **)error {
     if (length == 0 || location == NSUIntegerMax) {
         return YES;
     }
+    
+    // prepare files
     [[NSFileManager defaultManager] removeItemAtPath:self.tempPath error:nil];
     [self closeStream:self.originWriteStream];
     
+    // prepare streams
     if (!self.originReadStream || [self.originReadStream streamStatus] == NSStreamStatusClosed || [self.originReadStream streamStatus] == NSStreamStatusAtEnd) {
         [self.originReadStream close];
         self.originReadStream = [[NSInputStream alloc] initWithFileAtPath:self.originPath];
@@ -177,6 +198,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
         return NO;
     }
     
+    // first part
     NSError *firstPartError;
     BOOL firstPartSuccessed = [self transcribeFrom:self.originReadStream to:tempOutputStream withLocation:0 andLength:location error:&firstPartError];
     if (!firstPartSuccessed || firstPartError) {
@@ -188,6 +210,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
         return NO;
     }
     
+    // second part
     NSUInteger secondPartLocation = (location == NSUIntegerMax || length == NSUIntegerMax) ? NSUIntegerMax : (location + length);
     NSError *secondPartError;
     BOOL secondPartSuccessed = [self transcribeFrom:self.originReadStream to:tempOutputStream withLocation:secondPartLocation andLength:NSUIntegerMax error:&secondPartError];
@@ -200,6 +223,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
         return NO;
     }
     
+    // finished
     [self closeStream:tempOutputStream];
     [self closeStream:self.originReadStream];
     
@@ -261,7 +285,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
     
     // truly insert
     NSError *trulyInsertError;
-    BOOL trulyInsertSuccessed = [self append:tempOutputStream content:content error:&trulyInsertError];
+    BOOL trulyInsertSuccessed = [self append:tempOutputStream content:content error:&trulyInsertError count:nil];
     if (!trulyInsertSuccessed || trulyInsertError) {
         if (error) {
             *error = trulyInsertError?:[self simpleError:BAPKVStreamFileEditorErrorCodeInsertActionTrulyInsertUnknownError description:@"Truly insert failed, unknown reason"];
@@ -293,6 +317,12 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
     return YES;
 }
 
++ (NSInteger)getSize:(NSString *)path {
+    NSDictionary<NSFileAttributeKey, id> *attrs = [[NSFileManager defaultManager] attributesOfItemAtPath:path error:nil];
+    NSNumber *sizeTmp = [attrs objectForKey:NSFileSize];
+    return sizeTmp ? sizeTmp.integerValue : -1;
+}
+
 #pragma mark - private methods
 #pragma mark path methods
 - (NSString *)rootFolderPath {
@@ -314,8 +344,8 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
     }
 }
 
-#pragma mark edit methods
-- (BOOL)append:(NSOutputStream *)stream content:(NSData *)content error:(NSError **)error {
+#pragma mark file edit methods
+- (BOOL)append:(NSOutputStream *)stream content:(NSData *)content error:(NSError **)error count:(NSInteger *)count {
     if (!content || content.length == 0) {
         return YES;
     }
@@ -336,10 +366,19 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
     const void *bytes = [content bytes];
     NSUInteger length = [content length];
     uint8_t *crypto_data = (uint8_t *)bytes;
-    NSInteger count = [stream write:crypto_data maxLength:length];
-    if (count == -1 || [stream streamStatus] == NSStreamStatusError) {
+    NSInteger writeCount = [stream write:crypto_data maxLength:length];
+    if (count) {
+        *count = writeCount;
+    }
+    if (writeCount == -1 || [stream streamStatus] == NSStreamStatusError) {
         if (error) {
-            *error = [self simpleError:BAPKVStreamFileEditorErrorCodeAppendActionWriteFailed description:[NSString stringWithFormat:@"Append failed(length=%ld), status=%ld, details:%@", length, [stream streamStatus], [[stream streamError] localizedDescription]]];
+            *error = [self simpleError:BAPKVStreamFileEditorErrorCodeAppendActionWriteFailed description:[NSString stringWithFormat:@"Append failed(length=%ld, writedCount=-1), status=%ld, details:%@", length, [stream streamStatus], [[stream streamError] localizedDescription]]];
+        }
+        return NO;
+    }
+    if (writeCount != content.length) {
+        if (error) {
+            *error = [self simpleError:BAPKVStreamFileEditorErrorCodeAppendActionWriteFailed description:[NSString stringWithFormat:@"Append failed(length=%ld, writedCount=%ld), status=%ld, details:%@", length, writeCount, [stream streamStatus], [[stream streamError] localizedDescription]]];
         }
         return NO;
     }

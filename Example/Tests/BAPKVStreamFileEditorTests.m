@@ -168,6 +168,16 @@
     XCTAssert([self checkFileContent:targetPath compareWith:@"12abcdefghijkl34"]);
 }
 
+- (void)testGetSize {
+    NSString *document = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    NSString *targetPath = [document stringByAppendingPathComponent:@"testFile"];
+    [[NSFileManager defaultManager] removeItemAtPath:targetPath error:nil];
+    [[@"abcdefghijkl" dataUsingEncoding:NSUTF8StringEncoding] writeToFile:targetPath atomically:YES];
+    
+    XCTAssert([self checkFileContent:targetPath compareWith:@"abcdefghijkl"]);
+    XCTAssert([BAPKVStreamFileEditor getSize:targetPath] == 12);
+}
+
 #pragma mark - utils methods
 - (BOOL)checkFileContent:(NSString *)path compareWith:(NSString *)baseStr {
     NSData *data = [NSData dataWithContentsOfFile:path];
