@@ -39,4 +39,5 @@ A persistent key-value store for iOS, and it's also fast.
   # s.public_header_files = 'Pod/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   s.dependency 'BAOCxxHash'
+  s.dependency 'BAError'
 end

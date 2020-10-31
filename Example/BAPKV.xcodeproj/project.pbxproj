@@ -305,11 +305,13 @@
 			);
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-BAPKV_Example/Pods-BAPKV_Example-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/BAError/BAError.framework",
 				"${BUILT_PRODUCTS_DIR}/BAOCxxHash/BAOCxxHash.framework",
 				"${BUILT_PRODUCTS_DIR}/BAPKV/BAPKV.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BAError.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BAOCxxHash.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/BAPKV.framework",
 			);

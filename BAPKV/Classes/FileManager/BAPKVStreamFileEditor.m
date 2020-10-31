@@ -7,6 +7,7 @@
 
 #import "BAPKVStreamFileEditor.h"
 #import <BAOCxxHash/BAOCxxHash.h>
+#import <BAError/NSError+BAError.h>
 
 static const NSUInteger BAPKVStreamFileEditorSliceSize = 1024;
 
@@ -442,7 +443,7 @@ typedef NS_ENUM(NSUInteger, BAPKVStreamFileEditorErrorCode) {
 
 #pragma mark others
 - (NSError *)simpleError:(NSUInteger)code description:(NSString *)description {
-    return [NSError errorWithDomain:NSStringFromClass([self class]) code:code userInfo:@{NSLocalizedDescriptionKey: description?:@"unknown"}];
+    return [NSError bae_errorWith:NSStringFromClass([self class]) code:code description:description causes:nil];
 }
 
 - (void)removeFile:(NSString *)path {
