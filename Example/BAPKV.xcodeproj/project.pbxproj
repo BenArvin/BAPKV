@@ -24,6 +24,7 @@
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 		D69914B25EC6E802A7E78AA5 /* Pods_BAPKV_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7F9A18DC5F155CEB7B84136F /* Pods_BAPKV_Tests.framework */; };
+		E4FB3B302572587600818EC0 /* BAPKVNewTest.m in Sources */ = {isa = PBXBuildFile; fileRef = E4FB3B2F2572587600818EC0 /* BAPKVNewTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,6 +67,7 @@
 		A8B14908B099635FF9B55E7A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		DB05506EB1EE1AEB8F03DE13 /* Pods-BAPKV_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BAPKV_Tests.debug.xcconfig"; path = "Target Support Files/Pods-BAPKV_Tests/Pods-BAPKV_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		DDEFAD0B406834F3FA070237 /* Pods_BAPKV_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BAPKV_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4FB3B2F2572587600818EC0 /* BAPKVNewTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BAPKVNewTest.m; sourceTree = "<group>"; };
 		EA12C28283F95298B913F96A /* Pods-BAPKV_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BAPKV_Example.release.xcconfig"; path = "Target Support Files/Pods-BAPKV_Example/Pods-BAPKV_Example.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -171,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				6003F5BB195388D20070C39A /* BAPKVStreamFileEditorTests.m */,
+				E4FB3B2F2572587600818EC0 /* BAPKVNewTest.m */,
 				6003F5B6195388D20070C39A /* Supporting Files */,
 			);
 			path = Tests;
@@ -382,6 +385,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F5BC195388D20070C39A /* BAPKVStreamFileEditorTests.m in Sources */,
+				E4FB3B302572587600818EC0 /* BAPKVNewTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

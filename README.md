@@ -18,7 +18,7 @@ pod 'BAPKV'
 
 ## Author
 
-benarvin, benarvin@outlook.com
+benarvin, benarvin93@outlook.com
 
 ## License
 

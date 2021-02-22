@@ -24,7 +24,7 @@ A persistent key-value store for iOS, and it's also fast.
   s.homepage         = 'https://github.com/benarvin/BAPKV'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'benarvin' => 'benarvin@outlook.com' }
+  s.author           = { 'benarvin' => 'benarvin93@outlook.com' }
   s.source           = { :git => 'https://github.com/benarvin/BAPKV.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
